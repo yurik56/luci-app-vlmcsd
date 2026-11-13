@@ -1,6 +1,6 @@
 local m, s
 
-local running=(luci.sys.call("pidof vlmcsd > /dev/null") == 0)
+local running = luci.sys.call("pidof vlmcsd >/dev/null 2>&1") == 0
 if running then	
 	m = Map("vlmcsd", translate("vlmcsd config"), translate("Vlmcsd is running."))
 else
@@ -16,6 +16,10 @@ enable.rmempty = false
 function enable.cfgvalue(self, section)
 	return luci.sys.init.enabled("vlmcsd") and self.enabled or self.disabled
 end
+
+local service_buttons = s:option(DummyValue, "_service_buttons", "")
+service_buttons.template = "cbi/vlmcsd_button"
+service_buttons.running = running
 
 local hostname = luci.model.uci.cursor():get_first("system", "system", "hostname")
 

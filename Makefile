@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-vlmcsd
-PKG_VERSION:=1.0.2
-PKG_RELEASE:=1
+PKG_VERSION:=2.0.1
+PKG_RELEASE:=3
 
 PKG_MAINTAINER:=cokebar <cokebar@cokebar.info>
 PKG_LICENSE:=MIT
@@ -42,7 +42,9 @@ endef
 define Package/luci-app-vlmcsd/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
-	( . /etc/uci-defaults/luci-app-vlmcsd ) && rm -f /etc/uci-defaults/luci-app-vlmcsd
+	if [ -f /etc/uci-defaults/luci-app-vlmcsd ]; then
+		( . /etc/uci-defaults/luci-app-vlmcsd ) && rm -f /etc/uci-defaults/luci-app-vlmcsd
+	fi
 	rm -f /tmp/luci-indexcache
 	sed -i '/srv-host=_vlmcs._tcp.lan/d' /etc/dnsmasq.conf
 fi
@@ -53,14 +55,20 @@ define Package/luci-app-vlmcsd/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/cbi
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	$(INSTALL_DIR) $(1)/www/luci-static/resources
 	$(INSTALL_DIR) $(1)/etc/config
 
 	$(INSTALL_BIN) ./files/luci-app-vlmcsd $(1)/etc/uci-defaults/luci-app-vlmcsd
+	sed -i 's/\r//g' $(1)/etc/uci-defaults/luci-app-vlmcsd
 	$(INSTALL_CONF) ./files/vlmcsd.config $(1)/etc/config/vlmcsd
-	$(INSTALL_DATA) ./files/luci/i18n/vlmcsd.zh-cn.lmo $(1)/usr/lib/lua/luci/i18n/vlmcsd.zh-cn.lmo
+	$(INSTALL_DATA) ./files/luci/i18n/vlmcsd.ru.lmo $(1)/usr/lib/lua/luci/i18n/vlmcsd.ru.lmo
 	$(INSTALL_DATA) ./files/luci/model/vlmcsd.lua $(1)/usr/lib/lua/luci/model/cbi/vlmcsd.lua
 	$(INSTALL_DATA) ./files/luci/controller/vlmcsd.lua $(1)/usr/lib/lua/luci/controller/vlmcsd.lua
+	$(INSTALL_DATA) ./files/luci/view/cbi/vlmcsd_button.htm $(1)/usr/lib/lua/luci/view/cbi/vlmcsd_button.htm
+	sed -i 's/\r//g' $(1)/usr/lib/lua/luci/view/cbi/vlmcsd_button.htm
+	$(INSTALL_DATA) ./files/luci/htdocs/luci-static/resources/vlmcsd.js $(1)/www/luci-static/resources/vlmcsd.js
 endef
 
 $(eval $(call BuildPackage,luci-app-vlmcsd))

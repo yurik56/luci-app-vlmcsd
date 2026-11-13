@@ -1,0 +1,9 @@
+<%+cbi/valueheader%>
+<div id="vlmcsd-service-buttons" data-running="<%=self.running and '1' or '0'%>" data-url="<%=url('admin/services/vlmcsd/control')%>" data-status-url="<%=url('admin/services/vlmcsd/status')%>" data-token="<%=token%>" data-error="<%=translate('Failed to control vlmcsd service.')%>" data-running-label="<%=translate('Vlmcsd is running.')%>" data-stopped-label="<%=translate('Vlmcsd is not running.')%>" style="display:flex; flex-wrap:wrap; gap:0.5em; align-items:center;">
+	<button class="btn cbi-button cbi-button-positive" type="button" data-action="start"<% if self.running then %> disabled="disabled"<% end %>><%=translate("Start")%></button>
+	<button class="btn cbi-button cbi-button-negative" type="button" data-action="stop"<% if not self.running then %> disabled="disabled"<% end %>><%=translate("Stop")%></button>
+	<button class="btn cbi-button cbi-button-primary" type="button" data-action="restart"><%=translate("Restart")%></button>
+</div>
+<span id="vlmcsd-service-result" role="status"></span>
+<script type="text/javascript" src="<%=resource%>/vlmcsd.js?v=18"></script>
+<%+cbi/valuefooter%>
